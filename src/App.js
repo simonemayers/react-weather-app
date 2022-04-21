@@ -1,128 +1,110 @@
+import { React, useState, useEffect } from "react";
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import './App.css';
+import axios from "axios"
 
-function Wind({ speed }){
-  return(
-    <div className='wind'>Wind Speed: {speed} mph</div>
-  )
+function App(){
+
+    const [data, setData] = useState(0)
+    const [location, setLocation] = useState(``)
+
+    // let zip = "29223"; 
+    let url = `https://api.openweathermap.org/data/2.5/weather?zip=${location},US&appid=0f694359e25ccf590bb71af57cb9504d&units=imperial`
+
+
+    const searchLocation = (event) => {
+        if(event.key === "Enter"){
+            axios.get(url).then((res) => {
+                setData(res.data)
+                console.log(res.data)
+            })
+            setLocation(``)
+
+        //     let icon; 
+        //     switch(data.weather[0].main){
+        //       case "Clouds": 
+        //         icon ="clouds"
+        //         break;
+        //       case "Haze":
+        //         icon = "haze2"
+        //         break;
+        //       case "Clear":
+        //         icon = "brightness-high"
+        //         break;
+        //       case "Rain":
+        //         icon = "cloud-drizzle"
+        //         break;
+        //       case "Snow":
+        //         icon = "snow"
+        //         break;
+        //         default: 
+        // }
+    }
 }
+    
 
-function Humidity({ percentage }){
-  return(
-    <div className='humidity'>Humidity: {percentage}%</div>
-  )
-}
+    return(
+        <div className="container">
+            <div className="card">
+            <div className="search-bar input-group">
+                <input 
+                    type="text"
+                    className="search-input form-control"
+                    value={location}
+                    onChange={event => setLocation(event.target.value)}
+                    onKeyPress={searchLocation}
+                    placeholder = "Enter A Zip Code"
+                />
+                {/* <button type="button" className="location-button btn btn-danger">
+                    <i class="bi bi-geo-alt"></i>
+                </button>
+                <button type="button" className="search-button btn btn-light">
+                    <i class="bi bi-search"></i>
+                </button> */}
+            </div>
+            <div className="weather">
+                    <h3 className="city">
+                        {data.name? data.name: null}
+                    </h3>
+                    <div className="time">
+                        {new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"long", day:"numeric", time:"long"})} {new Date().toLocaleTimeString([], {hour: "numeric", minute:"numeric"})}
+                    </div>
+                    <div className="temps">
+                        <div className="low">
+                            {data? Math.round(data.main.temp_min)+"°F" : null}
+                        </div>
+                        <div className="temp">
+                            {data? Math.round(data.main.temp)+"°F" : null}
 
-function FeelsLike({ temp, degree }){
-  return(
-    <div className='feels-like'>Feels Like: {temp}°{degree}</div>
-  )
-}
+                        </div>
+                        <div className="high">
+                            {data? Math.round(data.main.temp_max)+"°F" : null}
 
-function Description({ name }){
-  return(
-    <div className='description'>{name}</div>
-  )
-}
+                        </div>
+                    </div>
+                    {/* <div>
+                        {data? <i id="icon" className=`bi-${icon}`></i> }
+                        
 
-function High({ temp, degree }){
-  return(
-    <div className='high'>{temp}°{degree}</div>
-
-  )
-}
-
-function Temp({  temp, degree }){
-  return(
-    <div className='temp'>{temp}°{degree}</div>
-
-  )
-}
-
-function Low({ temp, degree }){
-  return(
-    <div className='low'>{temp}°{degree}</div>
-  )
-}
-
-function Temps({ degree }){
-  return(
-    <div className='temps'>
-      <Low temp={12}  degree={degree}/>
-      <Temp temp={73} degree={degree}/>
-      <High temp={90} degree={degree} />
-    </div>
-  )
-}
-
-function Time(){
-  return(
-    <div className='time'>{new Date().toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"long", day:"numeric", time:"long"})} {new Date().toLocaleTimeString([], {hour: "numeric", minute:"numeric"})} </div>
-  )
-}
-
-function City({ name }){
-  return(
-    <h3 className='city'>Weather in {name}</h3>
-  )
-}
-
-function Weather(){
-  return(
-    <div className='weather'>
-      <City name="Charlotte" />
-      <Time />
-      <Temps degree="F" />
-      <Description name = "Cloudy"/>
-      <FeelsLike temp={79} degree="F"/>
-      <Humidity percentage={60} />
-      <Wind speed={6.2}/>
-
-  </div>
-  )
-}
-
-function Button({ name, classes }){
-  return(
-    <button type='button' className={classes}>{name}</button>
-  )
-}
-
-function Input(){
-  return(
-    <input type="text" className="search-input form-control" placeholder="Enter A Zip Code"></input>
-  )
-}
-
-function InputGroup(){
-  return(
-    <div className='search-bar input-group'>
-      <Input />
-      <Button name='Location' classes="location-button btn btn-danger"/>
-      <Button name='Search' classes="search-button btn btn-light"/>
-    </div>
-  )
-}
-
-function Card(){
-  return(
-    <div className='card'>
-      <InputGroup />
-      <Weather />
-    </div>
-  )
-}
-
-function Container(){
-  return(
-    <div className='container'><Card /></div>
-  )
-}
-
-function App() {
-  return(
-    <Container />
-
-  )
+                    </div> */}
+                    <div className="description">
+                        {data? data.weather[0].description : null}
+                    </div>
+                    <div className="feels-like">
+                        {data? "Feels like: " + Math.round(data.main.feels_like)+"°F" : null}
+                    </div>
+                    <div className="humidity">
+                      {data? "Humidity: " + data.main.humidity+"%" : null}
+                    </div>
+                    <div className="wind">
+                       {data? "Wind Speed: " + data.wind.speed+"MPH" : null}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default App;
